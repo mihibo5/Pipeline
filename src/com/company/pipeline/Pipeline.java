@@ -7,6 +7,7 @@ public class Pipeline {
 
     private int pipelineLevel = 1;
     private LinkedList<Pipe<?>> pipeline;
+    private PipeExecutableParameters<?> initialParameters;
 
     public Pipeline(PipelineInterface pipelineInterface) {
         this.pipeline = new LinkedList<>();
@@ -29,8 +30,13 @@ public class Pipeline {
         }
     }
 
+    public Pipeline(PipelineInterface pipelineInterface, PipeExecutable<?>[] listOfExecutables, PipeExecutableParameters<?> parameters) {
+        this(pipelineInterface, listOfExecutables);
+        this.initialParameters = parameters;
+    }
+
     public void start() {
         this.pipelineInterface.onExecutionStarted();
-        this.pipeline.getFirst().startExecution();
+        this.pipeline.getFirst().startExecution(this.initialParameters);
     }
 }

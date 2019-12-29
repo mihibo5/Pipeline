@@ -1,6 +1,6 @@
 package com.company.pipeline;
 
-import static com.company.pipeline.PipelineStatus.STOPPED;
+import static com.company.pipeline.PipelineStatus.*;
 
 public class Pipe<E> {
     private PipeExecutable<E> callable;
@@ -19,20 +19,31 @@ public class Pipe<E> {
         this.level = level;
     }
 
-    protected void startExecution() {
+    protected void startExecution(PipeExecutableParameters<?> parameters) {
         new Thread(() -> {
             try {
+                this.status = RUNNING;
                 this.pipelineInterface.onPipeExecutionStarted(this.level);
+
+                //first we deal with parameters
+                if (parameters != null) {
+
+                }
 
                 //first we execute the pipeline
                 this.result = this.callable.call();
 
-                //then we pass to the next level if there is any
                 this.pipelineInterface.onPipeExecutionFinished(this.level);
                 if (this.nextPipe != null) {
+                    //then we pass to the next level
+                    PipeExecutableParameters<?> newParameters = new PipeExecutableParameters<>();
+                    this.nextPipe.startExecution(newParameters);
 
+                    this.status = FINISHED;
                 }
                 else {
+                    //there is no next level
+                    this.status = STOPPED;
                     this.pipelineInterface.onPipelineIterationFinished();
                 }
 
