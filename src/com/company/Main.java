@@ -37,8 +37,6 @@ public class Main implements PipelineInterface {
 
         Pipeline pipeline = new Pipeline(this, callables);
         pipeline.start();
-
-        System.out.println("testing");
     }
 
     private StringBuilder httpRequest(String url) {
@@ -71,5 +69,22 @@ public class Main implements PipelineInterface {
     @Override
     public void onExecutionStarted() {
         System.out.println("Pipeline started!");
+    }
+
+    @Override
+    public void onPipeExecutionStarted(int level) {
+        System.out.println("Level " + level + " of pipeline started!");
+    }
+
+    @Override
+    public void onPipeExecutionFinished(int level) {
+        System.out.println("Level " + level + " of pipeline finished!");
+
+    }
+
+    @Override
+    public void onPipelineIterationFinished() {
+        System.out.println("Pipeline iteration finished!");
+
     }
 }
