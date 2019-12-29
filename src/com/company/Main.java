@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.pipeline.PipeExecutable;
 import com.company.pipeline.Pipeline;
+import com.company.pipeline.PipelineInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,32 +11,37 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
 
-public class Main {
+public class Main implements PipelineInterface {
 
     public static void main(String[] args) {
-        PipeExecutable<?>[] callables = {
-            new PipeExecutable<String>() {
-                @Override
-                public String call() {
-                    return Objects.requireNonNull(httpRequest("http://www.google.com")).toString();
-                }
-            },
+        Main main = new Main();
+        main.usePipeline();
+    }
 
-            new PipeExecutable<String>() {
-                @Override
-                public String call() {
-                    return "test";
+    private void usePipeline() {
+        PipeExecutable<?>[] callables = {
+                new PipeExecutable<String>() {
+                    @Override
+                    public String call() {
+                        return Objects.requireNonNull(httpRequest("http://www.google.com")).toString();
+                    }
+                },
+
+                new PipeExecutable<String>() {
+                    @Override
+                    public String call() {
+                        return "test";
+                    }
                 }
-            }
         };
 
-        Pipeline pipeline = new Pipeline(callables);
+        Pipeline pipeline = new Pipeline(this, callables);
         pipeline.start();
 
         System.out.println("testing");
     }
 
-    private static StringBuilder httpRequest(String url) {
+    private StringBuilder httpRequest(String url) {
         try {
             URL requestURL = new URL(url);
             URLConnection requestConnection = requestURL.openConnection();
@@ -57,5 +63,13 @@ public class Main {
             System.out.println("FAILED!");
             return null;
         }
+    }
+
+    /**
+     * Pipeline interface usage
+     */
+    @Override
+    public void onExecutionStarted() {
+        System.out.println("Pipeline started!");
     }
 }

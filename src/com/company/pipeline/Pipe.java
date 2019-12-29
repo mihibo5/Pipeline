@@ -6,6 +6,8 @@ public class Pipe<E> extends Pipeline {
     private PipeExecutable<E> callable;
     protected PipelineStatus status = STOPPED;
 
+    protected Pipe<?> nextPipe;
+
     private E result;
 
     public Pipe(PipeExecutable<E> callable) {
@@ -15,7 +17,13 @@ public class Pipe<E> extends Pipeline {
     protected void startExecution() {
         new Thread(() -> {
             try {
-                result = this.callable.call();
+                //first we execute the pipeline
+                this.result = this.callable.call();
+
+                //then we pass to the next level if there is any
+                if (this.nextPipe != null) {
+
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
