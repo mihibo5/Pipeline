@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.pipeline.PipeExecutable;
+import com.company.pipeline.PipeExecutableParameters;
 import com.company.pipeline.Pipeline;
 import com.company.pipeline.PipelineInterface;
 
@@ -23,7 +24,7 @@ public class Main implements PipelineInterface {
                 new PipeExecutable<String, String>() {
                     @Override
                     public String call() {
-                        return Objects.requireNonNull(httpRequest("http://www.google.com")).toString();
+                        return Objects.requireNonNull(httpRequest(this.parameters.getValue().toString())).toString();
                     }
                 },
 
@@ -36,7 +37,7 @@ public class Main implements PipelineInterface {
                 }
         };
 
-        Pipeline<String, String> pipeline = new Pipeline<>(this, callables);
+        Pipeline<String, String> pipeline = new Pipeline<>(this, callables, new PipeExecutableParameters<>("http://www.google.com"));
         pipeline.start();
     }
 
