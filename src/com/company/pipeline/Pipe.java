@@ -2,24 +2,25 @@ package com.company.pipeline;
 
 import static com.company.pipeline.PipelineStatus.*;
 
-public class Pipe<E> {
-    private PipeExecutable<E> callable;
+public class Pipe<E, T> {
+    private PipeExecutable<E, T> callable;
     protected PipelineStatus status = STOPPED;
 
     private PipelineInterface pipelineInterface;
 
     private int level = -1;
-    protected Pipe<?> nextPipe;
+    protected Pipe<?, T> previousPipe;
+    protected Pipe<?, T> nextPipe;
 
-    private E result;
+    protected E result;
 
-    public Pipe(PipeExecutable<E> callable, int level, PipelineInterface pipelineInterface) {
+    public Pipe(PipeExecutable<E, T> callable, int level, PipelineInterface pipelineInterface) {
         this.pipelineInterface = pipelineInterface;
         this.callable = callable;
         this.level = level;
     }
 
-    protected void startExecution(PipeExecutableParameters<?> parameters) {
+    protected void startExecution(PipeExecutableParameters<?, T> parameters) {
         new Thread(() -> {
             try {
                 this.status = RUNNING;
@@ -27,7 +28,7 @@ public class Pipe<E> {
 
                 //first we deal with parameters
                 if (parameters != null) {
-
+                    this.callable.parameters = (PipeExecutableParameters<E, T>) parameters;
                 }
 
                 //first we execute the pipeline
@@ -36,7 +37,7 @@ public class Pipe<E> {
                 this.pipelineInterface.onPipeExecutionFinished(this.level);
                 if (this.nextPipe != null) {
                     //then we pass to the next level
-                    PipeExecutableParameters<?> newParameters = new PipeExecutableParameters<>();
+                    PipeExecutableParameters<?, T> newParameters = new PipeExecutableParameters(this.result);
                     this.nextPipe.startExecution(newParameters);
 
                     this.status = FINISHED;

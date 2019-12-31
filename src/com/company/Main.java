@@ -19,23 +19,24 @@ public class Main implements PipelineInterface {
     }
 
     private void usePipeline() {
-        PipeExecutable<?>[] callables = {
-                new PipeExecutable<String>() {
+        PipeExecutable<String, String>[] callables = new PipeExecutable[] {
+                new PipeExecutable<String, String>() {
                     @Override
                     public String call() {
                         return Objects.requireNonNull(httpRequest("http://www.google.com")).toString();
                     }
                 },
 
-                new PipeExecutable<String>() {
+                new PipeExecutable<String, String>() {
                     @Override
                     public String call() {
+                        System.out.println(this.parameters.getValue());
                         return "test";
                     }
                 }
         };
 
-        Pipeline pipeline = new Pipeline(this, callables);
+        Pipeline<String, String> pipeline = new Pipeline<>(this, callables);
         pipeline.start();
     }
 

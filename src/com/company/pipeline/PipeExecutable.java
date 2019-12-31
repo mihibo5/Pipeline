@@ -2,13 +2,13 @@ package com.company.pipeline;
 
 import java.util.concurrent.Callable;
 
-public class PipeExecutable<E> implements Callable<E> {
+public class PipeExecutable<E, T> implements Callable<E> {
 
-    private PipeExecutableParameters<?> parameters;
+    public PipeExecutableParameters<E, T> parameters;
 
     public PipeExecutable() {}
 
-    public PipeExecutable(PipeExecutableParameters<?> parameters) {
+    public PipeExecutable(PipeExecutableParameters<E, T> parameters) {
         this();
         this.parameters = parameters;
     }
@@ -17,4 +17,6 @@ public class PipeExecutable<E> implements Callable<E> {
     public E call() throws Exception {
         return null;
     }
+
+
 }
